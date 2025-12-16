@@ -27,15 +27,42 @@ A modern React-based dashboard for uploading CSV datasets, exploring insights, a
 
 ## ✨ Features
 
-- Secure JWT-based authentication
-- CSV file upload interface
-- Dataset listing and management
-- Automatic column type detection (numeric vs categorical)
-- Interactive charts with dynamic column selection
-- Dataset preview and summary insights
-- Logout and session handling
+- 🔐 **Authentication & Access**
+  - Secure JWT-based authentication
+  - Login & logout flow
+  - Protected dashboard routes
+  - Token-based session handling
 
----
+- 📁 **Dataset Management**
+  - CSV file upload interface
+  - User-specific dataset storage
+  - Dataset listing with metadata (rows, columns, upload date)
+  - Dataset preview (first rows)
+
+- 📊 **Data Insights & Visualization**
+  - Automatic column type detection (numeric vs categorical)
+  - Interactive line charts using Recharts
+  - Dynamic numeric column selection
+  - Real-time chart updates
+
+- 📈 **Statistical Analysis**
+  - Minimum value calculation
+  - Maximum value calculation
+  - Average (mean) calculation
+  - Displayed alongside charts for context
+
+- 🧱 **Clean Frontend Architecture**
+  - Modular React components
+  - Centralized API handling with Axios
+  - React Router for page navigation
+  - Separation of UI, logic, and data fetching
+
+- 🚀 **Future-Ready Design**
+  - Easily extendable chart types
+  - Backend-agnostic REST API integration
+  - Ready for deployment (Vercel / Netlify)
+
+--- 
 
 ## 🧰 Tech Stack
 
@@ -46,17 +73,6 @@ A modern React-based dashboard for uploading CSV datasets, exploring insights, a
 - **React Router**
 - **JWT Authentication**
 - **REST API (Node.js + Express backend)**
-
----
-
-## 🗂️ Project Structure
-src/
-├── api/ # Axios instance & API helpers
-├── pages/ # Route-level pages (Login, Dashboard)
-├── components/ # Reusable UI components
-├── screenshots/ # README screenshots
-├── App.jsx # App routes
-├── main.jsx # React entry point
 
 ---
 
