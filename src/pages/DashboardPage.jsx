@@ -12,12 +12,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 
+/* Helper: recommend chart column */
+const getRecommendedChartColumn = (columnTypes) => {
+  const numericCols = Object.entries(columnTypes)
+    .filter(([_, type]) => type === "numeric")
+    .map(([col]) => col);
+
+  return numericCols[0] || "";
+};
+
 function Dashboard() {
   const navigate = useNavigate();
 
   const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -26,7 +34,11 @@ function Dashboard() {
   const [insightsLoading, setInsightsLoading] = useState(false);
 
   const [chartCol, setChartCol] = useState("");
+  const [chartData, setChartData] = useState([]);
 
+  /* =========================
+     AUTH CHECK
+  ========================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -36,12 +48,15 @@ function Dashboard() {
     fetchDatasets();
   }, [navigate]);
 
+  /* =========================
+     API CALLS
+  ========================= */
   const fetchDatasets = async () => {
     try {
       const res = await api.get("/data");
       setDatasets(res.data);
-    } catch (err) {
-      setError("Failed to load datasets");
+    } catch {
+      alert("Failed to load datasets");
     } finally {
       setLoading(false);
     }
@@ -50,42 +65,51 @@ function Dashboard() {
   const fetchInsights = async (id) => {
     try {
       setInsightsLoading(true);
+
       const res = await api.get(`/data/${id}/insights`);
       setInsights(res.data);
       setSelectedDatasetId(id);
 
-      const nums = Object.entries(res.data.columnTypes)
-        .filter(([_, type]) => type === "numeric")
-        .map(([col]) => col);
+      const recommended = getRecommendedChartColumn(res.data.columnTypes);
+      setChartCol(recommended);
 
-      setChartCol(nums[0] || "");
-    } catch (err) {
+      if (recommended) {
+        fetchChartData(id, recommended);
+      }
+    } catch {
       alert("Failed to load insights");
     } finally {
       setInsightsLoading(false);
     }
   };
 
+  const fetchChartData = async (datasetId, column) => {
+    try {
+      const res = await api.get(
+        `/data/${datasetId}/chart?column=${column}`
+      );
+      setChartData(res.data.points);
+    } catch {
+      alert("Failed to load chart data");
+    }
+  };
+
+  /* =========================
+     UPLOAD
+  ========================= */
   const handleUpload = async (e) => {
     e.preventDefault();
-
-    if (!file) {
-      alert("Please select a CSV file");
-      return;
-    }
+    if (!file) return alert("Please select a CSV file");
 
     const formData = new FormData();
     formData.append("file", file);
 
     try {
       setUploading(true);
-      await api.post("/data/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-
+      await api.post("/data/upload", formData);
       setFile(null);
-      await fetchDatasets();
-    } catch (err) {
+      fetchDatasets();
+    } catch {
       alert("Upload failed");
     } finally {
       setUploading(false);
@@ -97,24 +121,14 @@ function Dashboard() {
     navigate("/login");
   };
 
-  const getNumericColumns = () => {
-    if (!insights) return [];
-    return Object.entries(insights.columnTypes)
-      .filter(([_, type]) => type === "numeric")
-      .map(([col]) => col);
-  };
+  const getNumericColumns = () =>
+    insights
+      ? Object.entries(insights.columnTypes)
+          .filter(([_, type]) => type === "numeric")
+          .map(([col]) => col)
+      : [];
 
-  const buildChartData = () => {
-    if (!insights || !chartCol) return [];
-    return insights.preview.map((row, index) => ({
-      index: index + 1,
-      value: Number(row[chartCol])
-    }));
-  };
-
-  if (loading) {
-    return <p style={{ padding: "2rem" }}>Loading datasets...</p>;
-  }
+  if (loading) return <p style={{ padding: "2rem" }}>Loading…</p>;
 
   return (
     <div>
@@ -123,40 +137,32 @@ function Dashboard() {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
           padding: "1rem 2rem",
           borderBottom: "1px solid #ddd"
         }}
       >
-        <h2 style={{ margin: 0 }}>Biz Insights</h2>
+        <h2>Biz Insights</h2>
         <button onClick={handleLogout}>Logout</button>
       </header>
 
-      {/* MAIN CONTENT */}
       <div style={{ padding: "2rem" }}>
-        <h2>Dashboard</h2>
-
-        {/* Upload CSV */}
+        {/* Upload */}
         <form onSubmit={handleUpload} style={{ marginBottom: "2rem" }}>
           <input
             type="file"
             accept=".csv"
             onChange={(e) => setFile(e.target.files[0])}
           />
-          <button
-            type="submit"
-            disabled={uploading}
-            style={{ marginLeft: "1rem" }}
-          >
-            {uploading ? "Uploading..." : "Upload CSV"}
+          <button disabled={uploading} style={{ marginLeft: "1rem" }}>
+            {uploading ? "Uploading CSV…" : "Upload CSV"}
           </button>
         </form>
 
-        {/* Dataset list */}
+        {/* Dataset List */}
         {datasets.length === 0 ? (
-          <p>No datasets uploaded yet.</p>
+          <p>No datasets yet — upload a CSV to get started.</p>
         ) : (
-          <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
+          <table border="1" cellPadding="8">
             <thead>
               <tr>
                 <th>Filename</th>
@@ -182,79 +188,35 @@ function Dashboard() {
           </table>
         )}
 
-        {/* Insights panel */}
-        {insightsLoading && <p>Loading insights...</p>}
+        {/* Insights */}
+        {insightsLoading && <p>Loading insights…</p>}
 
         {insights && (
-          <div style={{ marginTop: "2rem" }}>
+          <>
             <h3>Dataset Insights</h3>
 
-            <p><strong>Filename:</strong> {insights.filename}</p>
-            <p><strong>Rows:</strong> {insights.rows}</p>
-            <p><strong>Columns:</strong> {insights.columns}</p>
-
-            <h4>Column Types</h4>
-            <ul>
-              {Object.entries(insights.columnTypes).map(([col, type]) => (
-                <li key={col}>
-                  {col}: {type}
-                </li>
-              ))}
-            </ul>
-
-            {/* PREVIEW TABLE */}
-            <h4>Preview (first 5 rows)</h4>
-            <table
-              border="1"
-              cellPadding="6"
-              style={{
-                borderCollapse: "collapse",
-                width: "100%",
-                marginBottom: "1.5rem"
-              }}
-            >
-              <thead>
-                <tr>
-                  {Object.keys(insights.preview[0]).map((col) => (
-                    <th key={col}>{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {insights.preview.map((row, i) => (
-                  <tr key={i}>
-                    {Object.values(row).map((val, j) => (
-                      <td key={j}>{val}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* DROPDOWN */}
+            {/* Dropdown */}
             {getNumericColumns().length > 0 && (
-              <div style={{ margin: "1rem 0" }}>
-                <label style={{ marginRight: "0.5rem" }}>
-                  Chart column:
-                </label>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ marginRight: "0.5rem" }}>Chart column:</label>
                 <select
                   value={chartCol}
-                  onChange={(e) => setChartCol(e.target.value)}
+                  onChange={(e) => {
+                    setChartCol(e.target.value);
+                    fetchChartData(selectedDatasetId, e.target.value);
+                  }}
                 >
                   {getNumericColumns().map((col) => (
-                    <option key={col} value={col}>
-                      {col}
-                    </option>
+                    <option key={col}>{col}</option>
                   ))}
                 </select>
               </div>
             )}
 
-            {/* CHART */}
-            <h4>Sample Chart</h4>
+            {/* Chart */}
             <div style={{ width: "100%", height: 300 }}>
               <ResponsiveContainer>
-                <LineChart data={buildChartData()}>
+                <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="index" />
                   <YAxis />
@@ -262,14 +224,46 @@ function Dashboard() {
                   <Line
                     type="monotone"
                     dataKey="value"
-                    name={chartCol}
                     stroke="#2563eb"
                     strokeWidth={2}
                   />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
+
+            {/* Stats */}
+            {insights.numericStats &&
+              chartCol &&
+              insights.numericStats[chartCol] && (
+                <div
+                  style={{
+                    marginTop: "1rem",
+                    padding: "1rem",
+                    border: "1px solid #ddd",
+                    borderRadius: "6px",
+                    maxWidth: "400px"
+                  }}
+                >
+                  <h4 style={{ marginTop: 0 }}>
+                    Statistics ({chartCol})
+                  </h4>
+                  <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+                    <li>
+                      <strong>Min:</strong>{" "}
+                      {insights.numericStats[chartCol].min}
+                    </li>
+                    <li>
+                      <strong>Max:</strong>{" "}
+                      {insights.numericStats[chartCol].max}
+                    </li>
+                    <li>
+                      <strong>Average:</strong>{" "}
+                      {insights.numericStats[chartCol].average}
+                    </li>
+                  </ul>
+                </div>
+              )}
+          </>
         )}
       </div>
     </div>
