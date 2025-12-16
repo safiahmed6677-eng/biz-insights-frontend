@@ -11,6 +11,8 @@ A modern React-based dashboard for uploading CSV datasets, exploring insights, a
 ![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-ACTIVE--DEVELOPMENT-blueviolet?style=for-the-badge&logo=github)
 
+</div>
+
 ---
 
 ## 📑 Table of Contents
