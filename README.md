@@ -1,16 +1,108 @@
-# React + Vite
+📌 Biz Insights Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React-based dashboard for uploading CSV datasets, exploring insights, and visualizing data through interactive charts.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![React](https://img.shields.io/badge/React-18-blue)
+![Vite](https://img.shields.io/badge/Vite-Frontend-purple)
+![Recharts](https://img.shields.io/badge/Recharts-Charts-blue)
+![JWT](https://img.shields.io/badge/Auth-JWT-green)
+![Status](https://img.shields.io/badge/Status-Active--Development-brightgreen)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📑 Table of Contents
 
-## Expanding the ESLint configuration
+- ✨ [Features](#-features)
+- 🧰 [Tech Stack](#-tech-stack)
+- 🗂️ [Project Structure](#-project-structure)
+- 📸 [Screenshots](#-screenshots)
+- ▶️ [Running Locally](#-running-locally)
+- 🚀 [Future Improvements](#-future-improvements)
+- 👤 [Author](#-author)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## ✨ Features
+
+- Secure JWT-based authentication
+- CSV file upload interface
+- Dataset listing and management
+- Automatic column type detection (numeric vs categorical)
+- Interactive charts with dynamic column selection
+- Dataset preview and summary insights
+- Logout and session handling
+
+---
+
+## 🧰 Tech Stack
+
+- **React 18**
+- **Vite**
+- **Recharts**
+- **Axios**
+- **React Router**
+- **JWT Authentication**
+- **REST API (Node.js + Express backend)**
+
+---
+
+## 🗂️ Project Structure
+src/
+├── api/ # Axios instance & API helpers
+├── pages/ # Route-level pages (Login, Dashboard)
+├── components/ # Reusable UI components
+├── screenshots/ # README screenshots
+├── App.jsx # App routes
+├── main.jsx # React entry point
+
+---
+
+## 📸 Screenshots
+
+### Login
+![Login](screenshots/login.png)
+
+### Dashboard
+Upload CSV files and manage datasets.
+![Dashboard](screenshots/dashboard.png)
+
+### Dataset Insights
+Automatic detection of column types and data preview.
+![Insights](screenshots/insights.png)
+
+### Charts
+Interactive charts with dynamic column selection.
+![Charts](screenshots/charts.png)
+
+---
+
+## ▶️ Running Locally
+
+### Prerequisites
+- Node.js (v18+ recommended)
+- Backend running locally (see backend repo)
+
+### Installation
+
+npm install
+
+## Start Development Server
+
+npm run dev
+
+## Frontend will run at
+
+http://localhost:5173
+
+---
+
+### 🚀 Future Improvements
+- UI styling & theme improvements
+- Multiple chart types (bar, pie)
+- Pagination for large datasets
+- Dataset deletion & editing
+- Deployment (Vercel / Netlify)
+
+---
