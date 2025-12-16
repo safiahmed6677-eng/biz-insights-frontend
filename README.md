@@ -118,6 +118,23 @@ http://localhost:5173
 
 ---
 
+## 🧠 What I Learned
+
+Developing the frontend for Biz Insights improved my practical React and frontend architecture skills, including:
+
+- Managing **authentication state** using JWTs stored in localStorage
+- Protecting routes and redirecting users based on auth status
+- Building **data-driven dashboards** using React hooks (`useState`, `useEffect`)
+- Fetching and handling asynchronous API data with Axios
+- Visualising real datasets using **Recharts**
+- Dynamically updating charts based on selected columns and datasets
+- Handling file uploads and multipart form data from the browser
+- Structuring a clean, scalable frontend using pages, services, and reusable logic
+
+This project reinforced how frontend and backend systems communicate in a full-stack application.
+
+---
+
 ### 🚀 Future Improvements
 - UI styling & theme improvements
 - Multiple chart types (bar, pie)
