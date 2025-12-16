@@ -1,3 +1,5 @@
+import "../styles/dashboard.css";
+
 import {
   LineChart,
   Line,
@@ -12,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 
-/* Helper: recommend chart column */
+/* Helper: recommend numeric column */
 const getRecommendedChartColumn = (columnTypes) => {
   const numericCols = Object.entries(columnTypes)
     .filter(([_, type]) => type === "numeric")
@@ -29,16 +31,11 @@ function Dashboard() {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  const [selectedDatasetId, setSelectedDatasetId] = useState(null);
   const [insights, setInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
-
   const [chartCol, setChartCol] = useState("");
-  const [chartData, setChartData] = useState([]);
-
-  /* =========================
-     AUTH CHECK
-  ========================= */
+  
+  /* ================= AUTH CHECK ================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -48,9 +45,7 @@ function Dashboard() {
     fetchDatasets();
   }, [navigate]);
 
-  /* =========================
-     API CALLS
-  ========================= */
+  /* ================= API ================= */
   const fetchDatasets = async () => {
     try {
       const res = await api.get("/data");
@@ -65,17 +60,11 @@ function Dashboard() {
   const fetchInsights = async (id) => {
     try {
       setInsightsLoading(true);
-
       const res = await api.get(`/data/${id}/insights`);
       setInsights(res.data);
-      setSelectedDatasetId(id);
 
       const recommended = getRecommendedChartColumn(res.data.columnTypes);
       setChartCol(recommended);
-
-      if (recommended) {
-        fetchChartData(id, recommended);
-      }
     } catch {
       alert("Failed to load insights");
     } finally {
@@ -83,20 +72,7 @@ function Dashboard() {
     }
   };
 
-  const fetchChartData = async (datasetId, column) => {
-    try {
-      const res = await api.get(
-        `/data/${datasetId}/chart?column=${column}`
-      );
-      setChartData(res.data.points);
-    } catch {
-      alert("Failed to load chart data");
-    }
-  };
-
-  /* =========================
-     UPLOAD
-  ========================= */
+  /* ================= UPLOAD ================= */
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file) return alert("Please select a CSV file");
@@ -121,6 +97,7 @@ function Dashboard() {
     navigate("/login");
   };
 
+  /* ================= CHART ================= */
   const getNumericColumns = () =>
     insights
       ? Object.entries(insights.columnTypes)
@@ -128,83 +105,103 @@ function Dashboard() {
           .map(([col]) => col)
       : [];
 
+  const buildChartData = () => {
+    if (!insights || !chartCol) return [];
+    return insights.preview.map((row, i) => ({
+      index: i + 1,
+      value: Number(row[chartCol])
+    }));
+  };
+
   if (loading) return <p style={{ padding: "2rem" }}>Loading…</p>;
 
   return (
-    <div>
+    <div className="page">
       {/* HEADER */}
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "1rem 2rem",
-          borderBottom: "1px solid #ddd"
-        }}
-      >
+      <header className="header">
         <h2>Biz Insights</h2>
-        <button onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
 
-      <div style={{ padding: "2rem" }}>
+      <div className="container">
         {/* Upload */}
-        <form onSubmit={handleUpload} style={{ marginBottom: "2rem" }}>
-          <input
-            type="file"
-            accept=".csv"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-          <button disabled={uploading} style={{ marginLeft: "1rem" }}>
-            {uploading ? "Uploading CSV…" : "Upload CSV"}
-          </button>
-        </form>
+        <div className="card">
+          <h3>Upload Dataset</h3>
+          <form onSubmit={handleUpload} className="upload-row">
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => setFile(e.target.files[0])}
+            />
+            <button disabled={uploading}>
+              {uploading ? "Uploading…" : "Upload CSV"}
+            </button>
+          </form>
+        </div>
 
-        {/* Dataset List */}
-        {datasets.length === 0 ? (
-          <p>No datasets yet — upload a CSV to get started.</p>
-        ) : (
-          <table border="1" cellPadding="8">
-            <thead>
-              <tr>
-                <th>Filename</th>
-                <th>Rows</th>
-                <th>Columns</th>
-                <th>Uploaded</th>
-              </tr>
-            </thead>
-            <tbody>
-              {datasets.map((ds) => (
-                <tr
-                  key={ds.id}
-                  onClick={() => fetchInsights(ds.id)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{ds.name}</td>
-                  <td>{ds.rows}</td>
-                  <td>{ds.columns.join(", ")}</td>
-                  <td>{new Date(ds.createdAt).toLocaleString()}</td>
+        {/* Dataset list */}
+        <div className="card">
+          <h3>Your Datasets</h3>
+
+          {datasets.length === 0 ? (
+            <p>No datasets uploaded yet.</p>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Filename</th>
+                  <th>Rows</th>
+                  <th>Columns</th>
+                  <th>Uploaded</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {datasets.map((ds) => (
+                  <tr
+                    key={ds.id}
+                    onClick={() => fetchInsights(ds.id)}
+                  >
+                    <td>{ds.name}</td>
+                    <td>{ds.rows}</td>
+                    <td>{ds.columns.join(", ")}</td>
+                    <td>{new Date(ds.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
 
         {/* Insights */}
         {insightsLoading && <p>Loading insights…</p>}
 
         {insights && (
-          <>
+          <div className="card">
             <h3>Dataset Insights</h3>
+
+            {/* Stats */}
+            <div className="stats-grid">
+              <div className="stat-box">
+                <strong>{insights.rows}</strong>
+                Rows
+              </div>
+              <div className="stat-box">
+                <strong>{insights.columns}</strong>
+                Columns
+              </div>
+            </div>
 
             {/* Dropdown */}
             {getNumericColumns().length > 0 && (
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ marginRight: "0.5rem" }}>Chart column:</label>
+              <div style={{ margin: "1rem 0" }}>
+                <label style={{ marginRight: "0.5rem" }}>
+                  Chart column:
+                </label>
                 <select
                   value={chartCol}
-                  onChange={(e) => {
-                    setChartCol(e.target.value);
-                    fetchChartData(selectedDatasetId, e.target.value);
-                  }}
+                  onChange={(e) => setChartCol(e.target.value)}
                 >
                   {getNumericColumns().map((col) => (
                     <option key={col}>{col}</option>
@@ -216,7 +213,7 @@ function Dashboard() {
             {/* Chart */}
             <div style={{ width: "100%", height: 300 }}>
               <ResponsiveContainer>
-                <LineChart data={chartData}>
+                <LineChart data={buildChartData()}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="index" />
                   <YAxis />
@@ -230,40 +227,7 @@ function Dashboard() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-
-            {/* Stats */}
-            {insights.numericStats &&
-              chartCol &&
-              insights.numericStats[chartCol] && (
-                <div
-                  style={{
-                    marginTop: "1rem",
-                    padding: "1rem",
-                    border: "1px solid #ddd",
-                    borderRadius: "6px",
-                    maxWidth: "400px"
-                  }}
-                >
-                  <h4 style={{ marginTop: 0 }}>
-                    Statistics ({chartCol})
-                  </h4>
-                  <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
-                    <li>
-                      <strong>Min:</strong>{" "}
-                      {insights.numericStats[chartCol].min}
-                    </li>
-                    <li>
-                      <strong>Max:</strong>{" "}
-                      {insights.numericStats[chartCol].max}
-                    </li>
-                    <li>
-                      <strong>Average:</strong>{" "}
-                      {insights.numericStats[chartCol].average}
-                    </li>
-                  </ul>
-                </div>
-              )}
-          </>
+          </div>
         )}
       </div>
     </div>
