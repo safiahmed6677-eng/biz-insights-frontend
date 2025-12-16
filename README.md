@@ -15,13 +15,13 @@ A modern React-based dashboard for uploading CSV datasets, exploring insights, a
 
 ## 📑 Table of Contents
 
-- ✨ [Features](#-features)
-- 🧰 [Tech Stack](#-tech-stack)
-- 🗂️ [Project Structure](#-project-structure)
-- 📸 [Screenshots](#-screenshots)
-- ▶️ [Running Locally](#-running-locally)
-- 🚀 [Future Improvements](#-future-improvements)
-- 👤 [Author](#-author)
+✨ [Features](#-features)
+🧰 [Tech Stack](#-tech-stack)
+🗂️ [Project Structure](#-project-structure)
+📸 [Screenshots](#-screenshots) 
+▶️ [Running Locally](#-running-locally)
+🚀 [Future Improvements](#-future-improvements)
+👤 [Author](#-author)
 
 ---
 
