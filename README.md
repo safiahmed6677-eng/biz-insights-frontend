@@ -7,9 +7,10 @@ A modern React-based dashboard for uploading CSV datasets, exploring insights, a
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-Frontend-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Recharts](https://img.shields.io/badge/Recharts-Charts-0088FE?style=for-the-badge)
+![Recharts](https://img.shields.io/badge/Recharts-Charts-22B5BF?style=for-the-badge)
 ![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
-![Status](https://img.shields.io/badge/Status-ACTIVE--DEVELOPMENT-blueviolet?style=for-the-badge&logo=github)
+![Status](https://img.shields.io/badge/Status-ACTIVE--DEVELOPMENT-8B5CF6?style=for-the-badge&logo=github)
+
 
 </div>
 
