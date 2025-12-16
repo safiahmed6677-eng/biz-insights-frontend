@@ -1,14 +1,15 @@
-📌 Biz Insights Frontend
+<div align="center">
 
+# 📌 Biz Insights Frontend
 A modern React-based dashboard for uploading CSV datasets, exploring insights, and visualizing data through interactive charts.
 
 ---
 
-![React](https://img.shields.io/badge/React-18-blue)
-![Vite](https://img.shields.io/badge/Vite-Frontend-purple)
-![Recharts](https://img.shields.io/badge/Recharts-Charts-blue)
-![JWT](https://img.shields.io/badge/Auth-JWT-green)
-![Status](https://img.shields.io/badge/Status-Active--Development-brightgreen)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-Frontend-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Recharts](https://img.shields.io/badge/Recharts-Charts-0088FE?style=for-the-badge)
+![JWT](https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![Status](https://img.shields.io/badge/Status-ACTIVE--DEVELOPMENT-blueviolet?style=for-the-badge&logo=github)
 
 ---
 
